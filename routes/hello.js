@@ -1,4 +1,5 @@
 const express = require("express");
+const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const http = require("https");
 const parseString = require("xml2js").parseString;
@@ -31,6 +32,7 @@ router.get("/add", (req, res, next) => {
   const data = {
     title: "Hello/Add",
     content: "会員登録",
+    form: { name: "", mail: "", age: 0 },
   };
   res.render("hello/add", data);
 });
@@ -38,20 +40,57 @@ router.get("/add", (req, res, next) => {
 /**
  * 会員新規登録.
  */
-router.post("/add", (req, res, next) => {
-  const name = req.body.name;
-  const mail = req.body.mail;
-  const age = Number(req.body.age);
+router.post(
+  "/add",
+  //バリデーション
+  [
+    check("name", "名前は必ず入力して下さい。").notEmpty(),
+    check("mail", "メールはメールの形式で入力して下さい。").isEmail(),
+    check("age", "年齢は数字で入力して下さい。").isInt(),
+    check("age", "年齢は0-120歳で入力して下さい。").custom((value) => {
+      return value >= 0 && value <= 120;
+    }),
+  ],
+  (req, res, next) => {
+    //バリデーションの結果
+    const errors = validationResult(req);
 
-  //DBに登録
-  db.serialize(() => {
-    db.run(
-      `INSERT INTO mydata (name, mail, age) VALUES ("${name}","${mail}",${age});`
-    );
-  });
+    //バリデーション問題あれば
+    if (!errors.isEmpty()) {
+      //エラーリストの作成
+      let errorList = "";
+      for (const errorItem of errors.array()) {
+        if (errorItem.msg) {
+          errorList += `<li>${errorItem.msg}</li>`;
+        }
+      }
+      const result = `<ul class="text-danger">${errorList}</ul>`;
 
-  res.redirect("/hello");
-});
+      //レンダリング
+      const data = {
+        title: "Hello/Add",
+        content: result,
+        form: req.body,
+      };
+      res.render("hello/add", data);
+
+      //バリデーション問題なければ
+    } else {
+      const name = req.body.name;
+      const mail = req.body.mail;
+      const age = Number(req.body.age);
+
+      //DBに登録
+      db.serialize(() => {
+        db.run(
+          `INSERT INTO mydata (name, mail, age) VALUES ("${name}","${mail}",${age});`
+        );
+      });
+
+      res.redirect("/hello");
+    }
+  }
+);
 
 /**
  * 1人の情報画面.
