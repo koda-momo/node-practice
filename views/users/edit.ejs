@@ -16,6 +16,13 @@
     <header><h1 class="display-4"><%= title %></h1></header>
     <div role="main">
       <form method="post" action="/users/edit">
+        <input type="hidden" name="id" id="id" value="<%= form.id %>" />
+        <input
+          type="hidden"
+          name="createdAt"
+          id="createdAt"
+          value="<%= form.createdAt %>"
+        />
         <div class="form-group">
           <label for="name">Name</label>
           <input

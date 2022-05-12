@@ -91,20 +91,46 @@ router.get("/edit", (req, res, next) => {
  * 編集.
  */
 router.post("/edit", (req, res, next) => {
-  const postData = {
-    name: req.body.name,
-    mail: req.body.mail,
-    pass: req.body.pass,
-    age: Number(req.body.age),
-    updatedAt: new Date(),
-  };
+  //対象のデータ取得
+  db.User.findByPk(req.body.id).then((user) => {
+    //データを入力値に上書き
+    user.name = req.body.name;
+    user.mail = req.body.mail;
+    user.pass = req.body.pass;
+    user.age = req.body.age;
+    user.updatedAt = new Date();
 
+    //更新保存
+    user.save().then(() => {
+      res.redirect("/users");
+    });
+  });
+});
+
+/**
+ * 削除画面.
+ */
+router.get("/delete", (req, res, next) => {
+  //URLからID取得→1件データを取得(userに代入)
+  db.User.findByPk(req.query.id).then((user) => {
+    const data = {
+      title: "Users/Edit",
+      form: user,
+    };
+    res.render("users/delete", data);
+  });
+});
+
+/**
+ * 削除.
+ */
+router.post("/delete", (req, res, next) => {
   db.sequelize
     //他のところからもアクセスがあった際に問題が起こらないようにするメソッド(sync)
     .sync()
     .then(() =>
-      //updateでDBのデータ更新
-      db.User.update({ postData, where: { id: Number(req.query.id) } })
+      //destroyでDBのデータ削除
+      db.User.destroy({ where: { id: req.body.id } })
     )
     .then(() => {
       res.redirect("/users");
