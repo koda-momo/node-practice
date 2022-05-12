@@ -77,4 +77,47 @@ router.get("/show", (req, res, next) => {
   });
 });
 
+/**
+ * 会員情報編集画面の情報取得.
+ */
+router.get("/edit", (req, res, next) => {
+  //URLからIDの取得
+  const id = Number(req.query.id);
+  //SQL文
+  const query = `SELECT * FROM mydata WHERE id = ${id};`;
+
+  //DBから取得したデータをHTMLに渡す
+  db.serialize(() => {
+    db.get(query, (err, row) => {
+      if (!err) {
+        const data = {
+          title: "Hello/edit",
+          content: `id=${id}のレコードを編集`,
+          mydata: row,
+        };
+        res.render("hello/edit", data);
+      }
+    });
+  });
+});
+
+/**
+ * 会員情報編集.
+ */
+router.post("/edit", (req, res, next) => {
+  const id = Number(req.body.id);
+  const name = req.body.name;
+  const mail = req.body.mail;
+  const age = Number(req.body.age);
+
+  //DBを更新
+  db.serialize(() => {
+    db.run(
+      `UPDATE mydata SET name="${name}",mail="${mail}",age=${age} WHERE id=${id};`
+    );
+  });
+
+  res.redirect("/hello");
+});
+
 module.exports = router;
