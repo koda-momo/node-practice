@@ -3,7 +3,7 @@ const router = express.Router();
 const http = require("https");
 const parseString = require("xml2js").parseString;
 
-//DB1の設定
+//DBの設定
 const sqlite3 = require("sqlite3");
 const db = new sqlite3.Database("mydb.sqlite3");
 
@@ -35,14 +35,15 @@ router.get("/add", (req, res, next) => {
   res.render("hello/add", data);
 });
 
+/**
+ * 会員新規登録.
+ */
 router.post("/add", (req, res, next) => {
   const name = req.body.name;
   const mail = req.body.mail;
   const age = Number(req.body.age);
 
-  console.log(`登録データ:${name},${mail},${age}`);
-
-  //???のところにname,mail,ageの値が入る
+  //DBに登録
   db.serialize(() => {
     db.run(
       `INSERT INTO mydata (name, mail, age) VALUES ("${name}","${mail}",${age});`
@@ -50,6 +51,30 @@ router.post("/add", (req, res, next) => {
   });
 
   res.redirect("/hello");
+});
+
+/**
+ * 1人の情報画面.
+ */
+router.get("/show", (req, res, next) => {
+  //URLからIDの取得
+  const id = Number(req.query.id);
+  //SQL文
+  const query = `SELECT * FROM mydata WHERE id = ${id};`;
+
+  //DBから取得したデータをHTMLに渡す
+  db.serialize(() => {
+    db.get(query, (err, row) => {
+      if (!err) {
+        const data = {
+          title: "Hello/show",
+          content: `id=${id}のレコード`,
+          mydata: row,
+        };
+        res.render("hello/show", data);
+      }
+    });
+  });
 });
 
 module.exports = router;
