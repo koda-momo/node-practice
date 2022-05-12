@@ -26,14 +26,13 @@ function check(req, res) {
  * ボード1ページ1ページ.
  */
 router.get("/:page", (req, res, next) => {
+  //ログインチェック
   if (check(req, res)) {
     return;
   }
 
   //ページ番号(何故*1で整数になるのか)
   const pg = req.params.page * 1;
-
-  console.dir("ログインまん" + JSON.stringify(req.session.login));
 
   //掲示板データ取得
   db.Board.findAll({
@@ -55,5 +54,12 @@ router.get("/:page", (req, res, next) => {
     res.render("boards/index", data);
   });
 });
+
+/**
+ * メッセージフォームの送信処理.
+ */
+/**
+ * 利用者のホーム画面.
+ */
 
 module.exports = router;
