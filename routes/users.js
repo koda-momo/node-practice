@@ -87,4 +87,28 @@ router.get("/edit", (req, res, next) => {
   });
 });
 
+/**
+ * 編集.
+ */
+router.post("/edit", (req, res, next) => {
+  const postData = {
+    name: req.body.name,
+    mail: req.body.mail,
+    pass: req.body.pass,
+    age: Number(req.body.age),
+    updatedAt: new Date(),
+  };
+
+  db.sequelize
+    //他のところからもアクセスがあった際に問題が起こらないようにするメソッド(sync)
+    .sync()
+    .then(() =>
+      //updateでDBのデータ更新
+      db.User.update({ postData, where: { id: Number(req.query.id) } })
+    )
+    .then(() => {
+      res.redirect("/users");
+    });
+});
+
 module.exports = router;
