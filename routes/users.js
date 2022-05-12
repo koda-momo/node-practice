@@ -137,4 +137,42 @@ router.post("/delete", (req, res, next) => {
     });
 });
 
+/**
+ * ログイン画面.
+ */
+router.get("/login", (req, res, next) => {
+  const data = {
+    title: "Users/Login",
+    content: "名前とパスワードを入力して下さい。",
+  };
+  res.render("users/login", data);
+});
+
+/**
+ * ログイン.
+ */
+router.post("/login", (req, res, next) => {
+  console.log("入力した値" + req.body.name, req.body.pass);
+  db.User.findOne({
+    where: {
+      name: req.body.name,
+      pass: req.body.pass,
+    },
+  }).then((user) => {
+    if (user) {
+      req.session.login = user;
+      let back = req.session.back;
+      if (!back) {
+        res.redirect("/");
+      }
+    } else {
+      const data = {
+        title: "Users/Login",
+        content: "名前かパスワードが誤っています。ご確認下さい。",
+      };
+      res.render("users/login", data);
+    }
+  });
+});
+
 module.exports = router;
