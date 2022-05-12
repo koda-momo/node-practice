@@ -1,8 +1,6 @@
 const express = require("express");
 const { check, validationResult } = require("express-validator");
 const router = express.Router();
-const http = require("https");
-const parseString = require("xml2js").parseString;
 
 //DBの設定
 const sqlite3 = require("sqlite3");
