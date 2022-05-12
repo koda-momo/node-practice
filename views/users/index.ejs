@@ -21,6 +21,24 @@
           <td><%= item.name %></td>
           <td><%= item.mail %></td>
           <td><%= item.age %></td>
+          <td>
+            <button
+              type="button"
+              onclick="location.href=`/users/edit?id=${item.id}/`"
+              class="btn btn-primary"
+            >
+              編集
+            </button>
+          </td>
+          <td>
+            <button
+              type="button"
+              onclick="location.href=`/users/edit?id=${item.id}`"
+              class="btn btn-primary"
+            >
+              削除
+            </button>
+          </td>
         </tr>
         <% } %>
       </table>
