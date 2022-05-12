@@ -1,4 +1,4 @@
-<!-- 会員一覧画面 -->
+<!-- 1人の会員データ画面 -->
 <!DOCTYPE html>
 <html lang="ja">
   <head>
@@ -15,18 +15,25 @@
   <body class="container">
     <header><h1 class="display-4"><%= title %></h1></header>
     <div role="main">
-      <% if(content != null){ %>
-      <table class="table">
-        <% for(const i in content){ %> <% const obj = content[i] %>
+      <p><%= content %></p>
+      <table>
         <tr>
-          <th><%= obj.id %></th>
-          <td><%= obj.name %></td>
-          <td><%= obj.mail %></td>
-          <td><%= obj.age %></td>
+          <th>ID</th>
+          <td><%= mydata.id %></td>
         </tr>
-        <% } %>
+        <tr>
+          <th>NAME</th>
+          <td><%= mydata.name %></td>
+        </tr>
+        <tr>
+          <th>MAIL</th>
+          <td><%= mydata.mail %></td>
+        </tr>
+        <tr>
+          <th>AGE</th>
+          <td><%= mydata.age %></td>
+        </tr>
       </table>
-      <% } %>
     </div>
   </body>
 </html>
