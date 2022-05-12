@@ -19,15 +19,33 @@
       <form method="post" action="/hello/add">
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" name="name" id="name" class="form-control" />
+          <input
+            type="text"
+            name="name"
+            id="name"
+            class="form-control"
+            value="<%= form.name %>"
+          />
         </div>
         <div class="form-group">
           <label for="mail">Mail</label>
-          <input type="text" name="mail" id="mail" class="form-control" />
+          <input
+            type="text"
+            name="mail"
+            id="mail"
+            class="form-control"
+            value="<%= form.mail %>"
+          />
         </div>
         <div class="form-group">
           <label for="age">Age</label>
-          <input type="number" name="age" id="age" class="form-control" />
+          <input
+            type="number"
+            name="age"
+            id="age"
+            class="form-control"
+            value="<%= form.age %>"
+          />
         </div>
         <input type="submit" class="btn btn-primary" value="作成" />
       </form>
