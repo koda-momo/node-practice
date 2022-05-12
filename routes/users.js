@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../models/index");
-
 const { Op } = require("sequelize");
 
 /**
@@ -160,11 +159,14 @@ router.post("/login", (req, res, next) => {
     },
   }).then((user) => {
     if (user) {
+      //ログインユーザ情報をセッションストレージに保存
       req.session.login = user;
+      //backの中身(URL)が存在→backに遷移、無ければ/に遷移
       let back = req.session.back;
       if (!back) {
-        res.redirect("/");
+        back = "/";
       }
+      res.redirect("/");
     } else {
       const data = {
         title: "Users/Login",
