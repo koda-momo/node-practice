@@ -57,8 +57,10 @@ router.get("/add", (req, res, next) => {
  */
 router.post("/add", (req, res, next) => {
   db.sequelize
+    //他のところからもアクセスがあった際に問題が起こらないようにするメソッド(sync)
     .sync()
     .then(() =>
+      //createでDBにデータ新規作成
       db.User.create({
         name: req.body.name,
         mail: req.body.mail,
@@ -69,6 +71,20 @@ router.post("/add", (req, res, next) => {
     .then(() => {
       res.redirect("/users");
     });
+});
+
+/**
+ * 編集画面.
+ */
+router.get("/edit", (req, res, next) => {
+  //URLからID取得→1件データを取得(userに代入)
+  db.User.findByPk(req.query.id).then((user) => {
+    const data = {
+      title: "Users/Edit",
+      form: user,
+    };
+    res.render("users/edit", data);
+  });
 });
 
 module.exports = router;
