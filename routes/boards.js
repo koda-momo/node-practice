@@ -58,8 +58,62 @@ router.get("/:page", (req, res, next) => {
 /**
  * メッセージフォームの送信処理.
  */
+router.post("/add", (req, res, next) => {
+  //ログインチェック
+  if (check(req, res)) {
+    return;
+  }
+
+  //DBにメッセージ追加
+  db.sequelize
+    .sync()
+    .then(() =>
+      db.Board.create({
+        userId: req.session.login.id,
+        message: req.body.message,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    )
+    .then(() => {
+      res.redirect("/boards/0");
+    });
+});
+
 /**
  * 利用者のホーム画面.
  */
+router.get("/home/:user/:id/:page", (req, res, next) => {
+  //ログインチェック
+  if (check(req, res)) {
+    return;
+  }
+  const id = req.params.id * 1;
+  const page = req.params.page * 1;
+  db.Board.findAll({
+    where: {
+      userId: id,
+    },
+    offset: page * ONEPAGE_BOARD_COUNT,
+    limit: ONEPAGE_BOARD_COUNT,
+    order: [["createdAt", "DESC"]],
+    include: [
+      {
+        model: db.User,
+        required: true,
+      },
+    ],
+  }).then((boards) => {
+    const data = {
+      title: "Boards",
+      login: req.session.login,
+      userId: id,
+      userName: req.params.user,
+      content: boards,
+      page: page,
+    };
+    res.render("boards/home", data);
+  });
+});
 
 module.exports = router;
